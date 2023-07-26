@@ -144,8 +144,17 @@ int menu1 = 0;
 int menu2 = 0;
 int menu3 = 0;
 int menu4 = 0;
+//triggerbot
+extern bool triggerbot;
 //1v1
 extern bool onevone;
+//screen pos ajuster
+//ajuster for screen pos
+extern int worldsedgetoprightx = 0;
+extern int worldsedgetoprighty = 0;
+extern int worldsedgebtmleftx = 0;
+extern int worldsedgebtmlefty = 0;
+
 
 
 int width;
@@ -339,13 +348,6 @@ void Overlay::RenderMenu()
 					ImGui::SameLine();
 					ImGui::Text(XorStr("Default is 0.05"));
 					ImGui::Dummy(ImVec2(0.0f, 10.0f));
-
-
-					ImGui::Text(XorStr("Max FOV:"));
-					ImGui::SameLine();
-					ImGui::TextColored(GREEN, "%.f", max_fov);
-					ImGui::SliderFloat(XorStr("##3"), &max_fov, 1.0f, 50.0f, "##");
-					ImGui::Dummy(ImVec2(0.0f, 10.0f));
 					ImGui::Text(XorStr("Aiming Bone:"));
 					ImGui::Text(XorStr("0=Head, 1=Neck, 2=Chest, 3=Stomach"));
 					ImGui::SliderInt(XorStr("##bone slider"), &bone, 0, 30);
@@ -514,7 +516,9 @@ void Overlay::RenderMenu()
 							config << smoothpred << "\n";
 							config << smoothpred2 << "\n";
 							config << std::boolalpha << weapon_nemesis << "\n";
-							config << veltest;
+							config << veltest << "\n";
+							config << std::boolalpha << triggerbot << "\n";
+							config << std::boolalpha << onevone;
 							config.close();
 						}
 					}
@@ -651,6 +655,9 @@ void Overlay::RenderMenu()
 							config >> smoothpred2;
 							config >> weapon_nemesis;
 							config >> veltest;
+							//triggerbot
+							config >> triggerbot;
+							config >> onevone;
 							config.close();
 
 						}
@@ -914,13 +921,13 @@ void Overlay::RenderInfo()
 		ImGui::TextColored(RED, "Aim Off %d", aim);
 	}
 	ImGui::SameLine();
-	if (TDMToggle)
+	if (triggerbot)
 	{
-		ImGui::TextColored(GREEN, "TDM Mode On");
+		ImGui::TextColored(GREEN, "1v1 On");
 	}
 	else
 	{
-		ImGui::TextColored(RED, "TDM Mode Off");
+		ImGui::TextColored(RED, "1v1 Off");
 	}
 	DrawLine(ImVec2(1, 28), ImVec2(280, 28), RED, 2);
 	ImGui::End();
