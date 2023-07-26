@@ -31,10 +31,11 @@
 #define OFFSET_TRAVERSAL_PROGRESS 0x2b5c // m_traversalProgress
 //#define OFFSET_TRAVERSAL_PROGRESS 0x2b60 // m_traversalStartTime
 #define OFFSET_FORCE_JUMP 0x0743e5a0 // in_jump
-#define OFFSET_FORCE_DUCK_TOGGLE 0x0be967c8 // in_duck
+#define OFFSET_FORCE_DUCK_TOGGLE 0x0c295450 // in_toggle_duck
 //#define OFFSET_TRAVERSAL_PROGRESS 0x2108  //m_currentFramePlayer.timeBase
-#define OFFSET_CURRENT_FRAME 0x16fad90 + 0x8 // GlobalVars
-
+#define OFFSET_CURRENT_FRAME 0x16fad90 + 0x0008 // GlobalVars
+//map
+#define OFFSET_HOST_MAP 0x01613990 + 0x58 //host_map + 0x58
 
 #define OFFSET_LIFE_STATE 0x0798 //m_lifeState, >0 = dead
 #define OFFSET_BLEED_OUT_STATE 0x2750 //m_bleedoutState, >0 = knocked

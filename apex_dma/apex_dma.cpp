@@ -38,10 +38,6 @@ float smoothpred2 = 0.05;
 float veltest = 1.00;
 //TDM Toggle
 bool TDMToggle = false;
-//Trigger Bot
-bool triggerbot = false;
-float isattacing = 0.0f;
-
 //Firing Range 1v1 toggle
 bool onevone = false;
 
@@ -260,14 +256,12 @@ void SetPlayerGlow(Entity& LPlayer, Entity& Target, int index)
 				float currentEntityTime = 5000.f;
 				if (!isnan(currentEntityTime) && currentEntityTime > 0.f) {
 					GColor color;
-					
 					if (!(firing_range) && (Target.isKnocked() || !Target.isAlive()))
 					{
 						color = { glowrknocked, glowgknocked, glowbknocked };
 					}
 					else if (Target.lastVisTime() > lastvis_aim[index] || (Target.lastVisTime() < 0.f && lastvis_aim[index] > 0.f))
 					{
-						
 						color = { glowrviz, glowgviz, glowbviz };
 					}
 					else 
@@ -296,8 +290,6 @@ void ProcessPlayer(Entity& LPlayer, Entity& target, uint64_t entitylist, int ind
 {
 	int entity_team = target.getTeamId();
 	
-
-						
 	if (!target.isAlive())
 	{
 		float localyaw = LPlayer.GetYaw();
@@ -337,23 +329,18 @@ void ProcessPlayer(Entity& LPlayer, Entity& target, uint64_t entitylist, int ind
 
 	}
 	
-	
-						
-
 	Vector EntityPosition = target.getPosition();
 	Vector LocalPlayerPosition = LPlayer.getPosition();
 	float dist = LocalPlayerPosition.DistTo(EntityPosition);
 	//Prints POS of localplayer for map cords for full map radar. only enable when adding a new map or fixing a old one, will output to console.
 	//std::printf("  X: %.6f   ||    Y:%.6f",LocalPlayerPosition.x, LocalPlayerPosition.y); //Prints x and y cords of localplayer to get mainmap radar stuff.
-	
-    //std::printf("X: %.6f || Y: %.6f\n", LocalPlayerPosition.x, LocalPlayerPosition.y);
-
 	if (dist > aimdist) return;
 	
 	
 	//Firing range stuff
 	if(!firing_range && !onevone)
 		if (entity_team < 0 || entity_team>50 || entity_team == team_player) return;
+	
 	
 	//Vis check aiming? dunno
 	if(aim==2)
@@ -397,12 +384,12 @@ void DoActions()
 	while (actions_t)
 	{
 		std::this_thread::sleep_for(std::chrono::milliseconds(1));
-		bool tmp_thirdperson = false;
-		bool tmp_chargerifle = false;
+
 		uint32_t counter = 0;
 
 		while (g_Base!=0 && c_Base!=0)
 		{
+			
 			
 			char MapName[200] = { 0 };
 			uint64_t MapName_ptr;
@@ -435,7 +422,8 @@ void DoActions()
 				map = 0;
 			}
 			
-			std::this_thread::sleep_for(std::chrono::milliseconds(30));
+			std::this_thread::sleep_for(std::chrono::milliseconds(30));	
+
 			uint64_t LocalPlayer = 0;
 			apex_mem.Read<uint64_t>(g_Base + OFFSET_LOCAL_ENT, LocalPlayer);
 			if (LocalPlayer == 0) continue;
@@ -447,6 +435,9 @@ void DoActions()
 			{
 				continue;
 			}
+
+			printf("Aim: %i\n", aiming);
+
 			uint64_t entitylist = g_Base + OFFSET_ENTITYLIST;
 
 			uint64_t baseent = 0;
@@ -466,7 +457,7 @@ void DoActions()
 			{
 				int c=0;
 				//Ammount of ents to loop, dont edit.
-				for (int i = 0; i < 10000; i++)
+				for (int i = 0; i < 61; i++)
 				{
 					uint64_t centity = 0;
 					apex_mem.Read<uint64_t>(entitylist + ((uint64_t)i << 5), centity);
@@ -479,9 +470,8 @@ void DoActions()
 						continue;
 					}
 
+					
 
-
-									   
 					ProcessPlayer(LPlayer, Target, entitylist, c);
 					c++;
 				}
@@ -509,7 +499,7 @@ void DoActions()
 						continue;
 					}
 
-										   
+					
 				}
 			}
 
@@ -533,7 +523,9 @@ void DoActions()
 			if(!lock)
 				aimentity = tmp_aimentity;
 			else
-				aimentity = lastaimentity;			
+				aimentity = lastaimentity;
+			
+			
 		}
 	}
 	actions_t = false;
@@ -596,7 +588,7 @@ static void EspLoop()
 				{
 					int c=0;
 					//Ammount of ents to loop, dont edit.
-					for (int i = 0; i < 10000; i++)
+					for (int i = 0; i < 61; i++)
 					{
 						uint64_t centity = 0;
 						apex_mem.Read<uint64_t>( entitylist + ((uint64_t)i << 5), centity);
@@ -636,6 +628,8 @@ static void EspLoop()
                               continue;
                             }
 						}
+						
+
 						Vector EntityPosition = Target.getPosition();
 						float dist = LocalPlayerPosition.DistTo(EntityPosition);
 
@@ -725,8 +719,8 @@ static void EspLoop()
 						{
 							if (entity_team < 0 || entity_team>50)
 							{
-                              continue;
-                            }
+							  continue;
+							}
 						}
 
 						Vector EntityPosition = Target.getPosition();
@@ -781,18 +775,19 @@ static void EspLoop()
 							lastvis_esp[i] = Target.lastVisTime();
 							valid = true;
 						}
+						
 					}
-				}
 
-				next2 = true;
-				while(next2 && g_Base!=0 && c_Base!=0 && esp)
-				{
-					std::this_thread::sleep_for(std::chrono::milliseconds(1));
+					next2 = true;
+					while(next2 && g_Base!=0 && c_Base!=0 && esp)
+					{
+						std::this_thread::sleep_for(std::chrono::milliseconds(1));
+					}
 				}
 			}
 		}
+		esp_t = false;
 	}
-	esp_t = false;
 }
 //Aimbot Loop stuff
 static void AimbotLoop()
@@ -1050,15 +1045,13 @@ static void set_vars(uint64_t add_addr)
 	client_mem.Read<uint64_t>(add_addr + sizeof(uint64_t)*103, LocTeam_addr);
 	uint64_t TDMToggle_addr = 0;
 	client_mem.Read<uint64_t>(add_addr + sizeof(uint64_t)*104, TDMToggle_addr);
-	//triggerbot
-	uint64_t triggerbot_addr = 0;
-	client_mem.Read<uint64_t>(add_addr + sizeof(uint64_t)*105, triggerbot_addr);
 	//1v1
 	uint64_t onevone_addr = 0;
-	client_mem.Read<uint64_t>(add_addr + sizeof(uint64_t)*106, onevone_addr);
+	client_mem.Read<uint64_t>(add_addr + sizeof(uint64_t)*105, onevone_addr);
 	//map
 	uint64_t map_addr = 0;
-	client_mem.Read<uint64_t>(add_addr + sizeof(uint64_t)*107, map_addr);
+	client_mem.Read<uint64_t>(add_addr + sizeof(uint64_t)*106, map_addr);
+	
 
 	
 	
@@ -1076,13 +1069,14 @@ static void set_vars(uint64_t add_addr)
 	if(check != 0xABCD)
 	{
 		//Add offset msg
-		printf("Incorrect values read. Check if the add_off is correct. Quitting.\n");
+		printf("Incorrect GreenerShot values read. Check if the add_off is correct on line 1829 of apex_dma.cpp on host side. Quitting.\n");
 		active = false;
 		return;
 	}
 	vars_t = true;
 	while(vars_t)
 	{
+		
 		std::this_thread::sleep_for(std::chrono::milliseconds(1));
 		if(c_Base!=0 && g_Base!=0)
 		{
@@ -1200,8 +1194,6 @@ static void set_vars(uint64_t add_addr)
 			client_mem.Write<int>(EntTeam_addr, EntTeam);
 			client_mem.Write<int>(LocTeam_addr, LocTeam);
 			client_mem.Read<bool>(TDMToggle_addr, TDMToggle);
-			//triggerbot
-			client_mem.Read<bool>(triggerbot_addr, triggerbot);
 			//1v1
 			client_mem.Read<bool>(onevone_addr, onevone);
 			//map
@@ -1252,7 +1244,7 @@ static void item_glow_t()
 			if (item_glow)
 			{
 				//item ENTs to loop, 10k-15k is normal. 10k might be better but will not show all the death boxes i think.
-				for (int i = 0; i < 16000; i++)
+				for (int i = 100; i < 16000; i++)
 				{
 					uint64_t centity = 0;
 					apex_mem.Read<uint64_t>(entitylist + ((uint64_t)i << 5), centity);
@@ -1281,8 +1273,6 @@ static void item_glow_t()
 					
 					//printf("%s\n", LevelNAME);
 					
-					//printf("%d\n", triggerbot);
-					//testing triggerbot bool value, ignore
 					
 					//Prints stuff you want to console
 					//if (strstr(glowName, "mdl/")) 
@@ -1872,7 +1862,7 @@ static void item_glow_t()
 				if(k==1)
 				{
 					//same and the ents above to turn the glow off
-					for (int i = 0; i < 16000; i++)
+					for (int i = 100; i < 16000; i++)
 					{
 						uint64_t centity = 0;
 						apex_mem.Read<uint64_t>(entitylist + ((uint64_t)i << 5), centity);
@@ -1909,7 +1899,7 @@ int main(int argc, char *argv[])
 	//const char* ap_proc = "EasyAntiCheat_launcher.exe";
 
 	//Client "add" offset
-	uint64_t add_off = 0xd8d30; //todo make this auto update..
+	uint64_t add_off = 0xd8d20; //todo make this auto update..
 
 	std::thread aimbot_thr;
 	std::thread esp_thr;
@@ -1935,7 +1925,7 @@ int main(int argc, char *argv[])
 			}
 
 			std::this_thread::sleep_for(std::chrono::seconds(1));
-			printf("Searching for apex process...\n");
+			printf("Searching for Apex process...\n");
 
 			apex_mem.open_proc(ap_proc);
 
@@ -1971,14 +1961,14 @@ int main(int argc, char *argv[])
 			}
 			
 			std::this_thread::sleep_for(std::chrono::seconds(1));
-			printf("Searching for client process...\n");
+			printf("Searching for GreenerShot process...\n");
 
 			client_mem.open_proc(cl_proc);
 
 			if(client_mem.get_proc_status() == process_status::FOUND_READY)
 			{
 				c_Base = client_mem.get_proc_baseaddr();
-				printf("\nClient process found\n");
+				printf("\nGreenerShot process found\n");
 				printf("Base: %lx\n", c_Base);
 
 				vars_thr = std::thread(set_vars, c_Base + add_off);

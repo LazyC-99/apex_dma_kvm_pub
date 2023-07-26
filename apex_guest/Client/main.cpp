@@ -64,11 +64,10 @@ float dynamicfovmax = 15.0f;
 int EntTeam;
 int LocTeam;
 bool TDMToggle = false;
-//triggerbot
-bool triggerbot = false;
 //1v1
 bool onevone = false;
-
+//Map number
+int map = 0;
 float smoothpred = 0.08;
 float smoothpred2 = 0.05;
 float veltest = 1.00;
@@ -179,8 +178,6 @@ bool weapon_nemesis = false;
 float aimdist = 9905.0f;
 //item glow brightness
 int itemglowbrightness = 10;
-//Map number
-int map = 0;
 
 
 bool thirdperson = false;
@@ -189,7 +186,7 @@ int allied_spectators = 0; //write
 bool valid = true; //write
 bool next2 = true; //read write
 
-uint64_t add[108];
+uint64_t add[107];
 
 bool k_f5 = 0;
 bool k_f6 = 0;
@@ -711,11 +708,7 @@ public:
 		this->ratioY = (s1.y - s2.y) / (w2.y - w1.y);
 	}
 };
-//These values only work with 1920x1080 fullscreen, you have to redo the values for anything else..
-// 
-// Take screenshot, First is top right random pos, then bttm left random pos from screen shot
-// 
-// First set is the x cord, then the y cord, then the screen x,y from the screenshot, do the same for the second set.
+// First set is the x cord, then the y cord, then the screen x,y from the screenshot vis pixel, do the same for the second set.
 // 1440p is x1.333333
 
 world KingsCanyon(ImVec2(25223.177734, 28906.144531), ImVec2(1197, 185), ImVec2(10399.223633, 13334.792969), ImVec2(1014, 381)); //could be more accurate 
@@ -729,6 +722,7 @@ world BrokenMoon(ImVec2(35159.300781, 30436.917969), ImVec2(1368, 151), ImVec2(-
 world StormPoint(ImVec2(34453.894531, 34695.917969), ImVec2(1264, 172), ImVec2(-28786.898438, -16240.749023), ImVec2(636, 677));  // mp_rr_tropic_island_mu1_storm updated - is within a few pixels of accuracy 7/16/2023
 
 //DONE get map auto 
+
 ImVec2 worldToScreenMap(D3DXVECTOR3 origin, int TeamID) {
 		float ratioX;
 		float ratioY;
@@ -741,7 +735,7 @@ ImVec2 worldToScreenMap(D3DXVECTOR3 origin, int TeamID) {
 			w1 = StormPoint.w1;
 			s1 = StormPoint.s1;
 		}
-		
+
 		else if (map == 2) { //KingsCanyon
 			ratioX = KingsCanyon.ratioX;
 			ratioY = KingsCanyon.ratioY;
@@ -766,10 +760,10 @@ ImVec2 worldToScreenMap(D3DXVECTOR3 origin, int TeamID) {
 			w1 = BrokenMoon.w1;
 			s1 = BrokenMoon.s1;
 		}
+		
 		else {
 			return ImVec2(0, 0);
 		}
-
 
 		//difference from location 1
 		float world_diff_x = origin.x - w1.x;
@@ -1104,17 +1098,16 @@ int main(int argc, char** argv)
 	add[102] = (uintptr_t)&EntTeam;
 	add[103] = (uintptr_t)&LocTeam;
 	add[104] = (uintptr_t)&TDMToggle;
-	add[105] = (uintptr_t)&triggerbot;
-	add[106] = (uintptr_t)&onevone;
+	add[105] = (uintptr_t)&onevone;
 	//map
-	add[107] = (uintptr_t)&map;
+	add[106] = (uintptr_t)&map;
 
 	
-	printf(XorStr("GameVersion=v3.0.35.21 || 6-20-2023 || |-| fov Testing |-| Add me offset: 0x%I64x\n"), (uint64_t)&add[0] - (uint64_t)GetModuleHandle(NULL));
+	printf(XorStr("GameVersion=v3.0.39.35 || 7-26-2023 || Add me offset: 0x%I64x\n"), (uint64_t)&add[0] - (uint64_t)GetModuleHandle(NULL));
 
 	Overlay ov1 = Overlay();
 	ov1.Start();
-	printf(XorStr("Waiting for The Extra Ban .... Never Gonna Get it!\n"));
+	printf(XorStr("Waiting for The BanHammer.... Never Gonna Get it!\n"));
 	while (check == 0xABCD)
 	{
 		if (IsKeyDown(VK_F4))
@@ -1270,9 +1263,6 @@ int main(int argc, char** argv)
 				config >> smoothpred2;
 				config >> weapon_nemesis;
 				config >> veltest;
-				//triggerbot
-				config >> triggerbot;
-				config >> onevone;
 				config.close();
 			}
 		}
@@ -1300,18 +1290,6 @@ int main(int argc, char** argv)
 			k_f6 = 0;
 		}
 		
-		//triggerbot
-
-		//if (IsKeyDown(0x58) && triggerbot == 0)
-		//{
-		//	triggerbot = true;
-		//}
-		//else if (!IsKeyDown(0x58) && triggerbot == 1)
-		//{
-
-		//	triggerbot = false;
-		//}
-		
 		//Main Map Radar, Needs Manual Setting of cords
 		if (IsKeyDown(0x4D) && mainradartoggle == 0)
 		{
@@ -1334,10 +1312,10 @@ int main(int argc, char** argv)
 		}
 		
 				
-		//if (IsKeyDown(VK_F1)) {
-		//	TDMToggle = !TDMToggle;
-		//	Sleep(500);
-		//}
+		if (IsKeyDown(VK_F1)) {
+			TDMToggle = !TDMToggle;
+			Sleep(500);
+		}
 
 		if (IsKeyDown(aim_key) && toggleaim && !IsKeyDown(aim_key2))
 		{
@@ -1348,12 +1326,12 @@ int main(int argc, char** argv)
 		else if (IsKeyDown(aim_key2) && toggleaim2)
 		{
 			aiming = true;
-			max_fov = 15;
+			max_fov = 10;
 		}
 		else
 		{
 			aiming = false;
-			max_fov = 15;
+			max_fov = 10;
 		}
 
 
