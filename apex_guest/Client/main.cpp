@@ -1109,7 +1109,7 @@ int main(int argc, char** argv)
 	add[106] = (uintptr_t)&map;
 
 	
-	printf(XorStr("GameVersion=v3.0.39.35 || 7-26-2023 || |-| TESTING |-| Add me offset: 0x%I64x\n"), (uint64_t)&add[0] - (uint64_t)GetModuleHandle(NULL));
+	printf(XorStr("GameVersion=v3.0.39.35 || 7-26-2023 || |-| TESTING THE STUFF |-| Add me offset: 0x%I64x\n"), (uint64_t)&add[0] - (uint64_t)GetModuleHandle(NULL));
 
 	Overlay ov1 = Overlay();
 	ov1.Start();
