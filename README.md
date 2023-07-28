@@ -62,3 +62,4 @@ Triggerbot*5.
 
 5: Cant get it to work, i got the trigger to work but not the bot part. Don't know how to check if its close and in crosshair.
 
+DO NOT USE, DETECTED MAYBE
