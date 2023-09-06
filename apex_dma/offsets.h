@@ -68,15 +68,15 @@
 #define GLOW_COLOR_R 0x1D0 + 0x30
 #define GLOW_COLOR_G 0x1D4 + 0x30
 #define GLOW_COLOR_B 0x1D8+ 0x30
-#define GLOW_START_TIME 0x02c8+ 0x30 //m_playerFloatLookStartTime=0x02c8
 
+#define GLOW_START_TIME 0x02c8+ 0x30 //m_playerFloatLookStartTime=0x02c8
 
 #define OFFSET_GLOW_ENABLE_GLOW_CONTEXT                 OFFSET_GLOW_ENABLE // Script_Highlight_SetCurrentContext
 #define OFFSET_GLOW_THROUGH_WALLS_GLOW_VISIBLE_TYPE     OFFSET_GLOW_THROUGH_WALLS // Script_Highlight_SetVisibilityType 5th mov
 #define GLOW_LIFE_TIME              0x3A4+ 0x30 // Script_Highlight_SetLifeTime + 4 (can't find)
 #define GLOW_DISTANCE               0x3B4+ 0x30 // Script_Highlight_SetFarFadeDist
 #define GLOW_TYPE                   0x2C4+ 0x30 // Script_Highlight_GetState + 4
-#define GLOW_COLOR                  0x1D0+ 0x30 // Script_CopyHighlightState 15th mov
+#define GLOW_COLOR                  0x1D0+ 0x30 // Script_CopyHighlightState 15th mov (maybe 0x200)
 #define GLOW_FADE                   0x388+ 0x30 // Script_Highlight_GetCurrentInsideOpacity 3rd result of 3 offsets consecutive or first + 8     (can't find)
 //triggerbot?
 #define CROSSHAIRSTART				0x1a74 // 	crosshairTargetStartTime
